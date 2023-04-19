@@ -2,16 +2,28 @@
 
 export class Lifecycle{
     static listeners = new Map();
-    static register(key){
+    static register(ref = null,key){
+        console.log(ref)
         const path = key||window.location.pathname
         Lifecycle.listeners.set(path,new Map())
-        Lifecycle.registerHooks(path)
+        Lifecycle.initEvent(path , ref)
+        if(ref){
+            document.addEventListener('touchmove', function(e) {
+                Lifecycle.beforeunload(path)
+                // const defaultValue = Lifecycle.getDefaultValue(path)
+                // if(defaultValue){
+                //     e.preventDefault();
+                // }
+                alert("00")
+                e.preventDefault();
+            }, { passive: false });
+        }
         return Lifecycle;
     }
     static getListener(path){
        const listener =  Lifecycle.listeners.get(path)
         if(!listener){
-            Lifecycle.register(path)
+            Lifecycle.register(null,path)
         }
        return  listener|| Lifecycle.listeners.get(path)
     }
@@ -21,16 +33,22 @@ export class Lifecycle{
         }
        
     }
-    static registerHooks(path){
+    static start(target , path){
+      
+    }
+    static initEvent(path,ref){
         const hooks = ['unload','beforeunload','statechange']
-        hooks.forEach(hook =>{
-            const pathMap = Lifecycle.listeners.get(path)
+        const pathMap = Lifecycle.listeners.get(path)
+        console.log(pathMap)
+        hooks.forEach(hook =>{  
             pathMap.set(hook, new Set());
             pathMap.set('defaultEvent',false)
         })
+        pathMap.set('target',ref)
     }
     static notify(key,hook){
         const listener = Lifecycle.getListener(key);
+        console.log(1,listener)
         const currentHook = Lifecycle.getListenerHook(listener, hook)
         currentHook.forEach(fun=>{
             if(typeof fun === 'function' ){
@@ -60,6 +78,10 @@ export class Lifecycle{
         const listener = Lifecycle.getListener(path);
         return listener.get('defaultEvent')
     }
+    static getTarget(path){
+        const listener = Lifecycle.getListener(path);
+        return listener.get('target')
+    }
     static beforeunload(path){
         const listener = Lifecycle.getListener(path);
         const currentHook = Lifecycle.getListenerHook(listener, 'beforeunload')
@@ -68,6 +90,8 @@ export class Lifecycle{
                fun({preventDefault:Lifecycle.preventDefault(path)}) 
             }
         })
+        
+
     }
 
     static unload(path){

@@ -6,12 +6,26 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title><%= htmlWebpackPlugin.options.title %></title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vConsole/3.3.4/vconsole.min.js"></script>
+    <style>
+      /* body {
+        overscroll-behavior: contain;
+      } */
+/*  */
+    </style>
   </head>
   <body>
+    
     <noscript>
       <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
+    <script>
+      new VConsole();
+    </script>
     <div id="app"></div>
+    <script>
+     
+    </script>
     <!-- built files will be auto injected -->
   </body>
 </html>

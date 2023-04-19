@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="page" :class="{'page-back': isBack}">
       4
       <input type="text" v-model="value" />
       {{ value }}
@@ -33,34 +33,29 @@
         value: 1,
       dialogVisible:false,
       listener:false,
-      detail:{}
+      detail:{},
+      isBack: false,
       };
     },
   
     mounted() {
       Lifecycle.register();
       Lifecycle.addEventListener("unload", () => {
-        console.log("unload");
+        
       });
     },
   
     methods: {
       start() {
-        const _this = this
-        document.addEventListener('touchstart', function(e) {
-        if (e.touches.length === 1) {
-          var touch = e.touches[0];
-          _this.detail = {
-            x:touch.pageX,
-            y:touch.pageY
-          }
-          console.log(_this.detail)
-        }
-      });
         this.listener = true
         Lifecycle.addEventListener("beforeunload", (event) => {
-          this.dialogVisible = true;
+          // this.dialogVisible = true;
           event.preventDefault();
+          this.isBack = true;
+          setTimeout(() => {
+            history.pushState(null, null,"/6");
+            this.isBack = false;
+        }, 300);
         });
       },
      
@@ -72,5 +67,18 @@
   };
   </script>
   
-  <style lang="scss" scoped></style>
+  <style  scoped>
+.page {
+  /* position: absolute; */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.3s ease-out;
+}
+
+.page-back {
+  transform: translate3d(-100%, 0, 0);
+}
+</style>
   
