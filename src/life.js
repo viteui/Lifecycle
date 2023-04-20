@@ -1,4 +1,4 @@
-
+import  router from './router'
 
 export class Lifecycle{
     static listeners = new Map();
@@ -9,15 +9,12 @@ export class Lifecycle{
         Lifecycle.initEvent(path , ref)
         if(ref){
             document.addEventListener('touchmove', function(e) {
-                Lifecycle.beforeunload(path)
-                // const defaultValue = Lifecycle.getDefaultValue(path)
-                // if(defaultValue){
-                //     e.preventDefault();
-                // }
-                alert("00")
                 e.preventDefault();
             }, { passive: false });
         }
+        document.addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        }, { passive: false });
         return Lifecycle;
     }
     static getListener(path){
@@ -45,10 +42,15 @@ export class Lifecycle{
             pathMap.set('defaultEvent',false)
         })
         pathMap.set('target',ref)
+        // window.history.pushState(null, null,path);
+       try {
+        router.push('2');
+       } catch (error) {
+        
+       }
     }
     static notify(key,hook){
         const listener = Lifecycle.getListener(key);
-        console.log(1,listener)
         const currentHook = Lifecycle.getListenerHook(listener, hook)
         currentHook.forEach(fun=>{
             if(typeof fun === 'function' ){
@@ -67,6 +69,7 @@ export class Lifecycle{
         // 清空hook
         listener.get(hook).clear()
         listener.set('defaultEvent',false)
+        window.history.back();
     }
     static preventDefault(path){
        return ()=>{
@@ -83,13 +86,17 @@ export class Lifecycle{
         return listener.get('target')
     }
     static beforeunload(path){
+       
         const listener = Lifecycle.getListener(path);
         const currentHook = Lifecycle.getListenerHook(listener, 'beforeunload')
+        console.log('beforeunload',path,currentHook)
         currentHook.forEach(fun=>{
             if(typeof fun === 'function' ){
                fun({preventDefault:Lifecycle.preventDefault(path)}) 
             }
         })
+        // const defaultValue = Lifecycle.getDefaultValue(path)
+        
         
 
     }

@@ -1,6 +1,6 @@
 <template>
   <div ref="page" id="page" class ='test'>
-    PageTwo
+    PageTwo 2
     <input type="text" v-model="value" />
     {{ value }}
     <button @click="start">开启监听</button>

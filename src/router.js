@@ -14,8 +14,8 @@ import { Lifecycle } from './life'
 // 或者，只是一个组件配置对象。
 // 我们晚点再讨论嵌套路由。
 const routes = [
-    { path: '/1', component: PageOne },
-    { path: '/2', component: PageTwo },
+    { path: '/1',  component: PageOne },
+    { path: '/2', name:'2',component: PageTwo },
     { path: '/3', component: Page3 },
     { path: '/4', component: Page5 },
     { path: '/5', component: Page6 },
@@ -27,15 +27,35 @@ const routes = [
 // 你还可以传别的配置参数, 不过先这么简单着吧。
 const router = new VueRouter({
     routes, // (缩写) 相当于 routes: routes
-    mode: 'history',
 })
 
-function preventBack(path) {
-    window.history.replaceState(null, null, path);
+function preventBack(path ,type="vue") {
+    console.log("返回触发的类型",type,path)
+    // window.history.pushState(null, null,path);
+    router.push('2');
 }
+
+// window.addEventListener('popstate', function(event) {
+   
+//     const path = event.target.location.pathname
+//     //window.location.href
+//     // 阻止用户返回到上一个状态
+//     console.log('popstate',path,JSON.parse(JSON.stringify(event)) ,window.location.pathname)
+//     Lifecycle.beforeunload(path)
+//     const defaultValue = Lifecycle.getDefaultValue(path)
+//     console.log(1,defaultValue)
+//     if (!defaultValue) {
+//         Lifecycle.unload(path)
+//     } else {
+//         preventBack(path,"popstate")
+//     }
+//   });
 router.beforeEach((to, from, next) => {
-    // const target = Lifecycle.getTarget(from.path)
-    // Lifecycle.beforeunload(from.path)
+   
+
+    try {
+         // const target = Lifecycle.getTarget(from.path)
+    Lifecycle.beforeunload(from.path)
     // target?.addEventListener('touchmove', function(e) {
     //     Lifecycle.beforeunload(from.path)
     // }, { passive: false });
@@ -47,6 +67,12 @@ router.beforeEach((to, from, next) => {
     } else {
         preventBack(from.path)
     }
+      } catch (error) {
+        if (error.name === 'NavigationDuplicated') {
+          // 处理导航
+          console.log('Navigation duplicated, but handled');
+        }
+      }
     return
 })
 export default router
